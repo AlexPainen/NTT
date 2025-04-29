@@ -67,7 +67,7 @@ src/
 
 1. Clonar el repositorio:
    ```bash
-   git clone [git@github.com:AlexPainen/NTT.git](https://github.com/AlexPainen/NTT.git)
+   git clone https://github.com/AlexPainen/NTT.git
    cd user-api
    ```
 
