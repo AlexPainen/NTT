@@ -1,6 +1,6 @@
 package com.ntt.userapi.repository;
 
-import com.ntt.userapi.model.entity.User;
+import com.ntt.userapi.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,6 +9,6 @@ import java.util.UUID;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
+    boolean existsByEmail(String email);
     Optional<User> findByEmail(String email);
-    boolean existsByEmail(String email); // Handy shortcut
 }
