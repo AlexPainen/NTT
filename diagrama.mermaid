@@ -1,0 +1,100 @@
+classDiagram
+    class UserController {
+        +createUser(UserRequestDTO): UserResponseDTO
+        +getAllUsers(): List<UserResponseDTO>
+        +getUserById(UUID): UserResponseDTO
+        +updateUser(UUID, UserRequestDTO): UserResponseDTO
+        +patchUser(UUID, UserRequestDTO): UserResponseDTO
+        +deleteUser(UUID): void
+    }
+
+    class UserService {
+        -userRepository: UserRepository
+        -jwtTokenProvider: JwtTokenProvider
+        -passwordRegex: String
+        +createUser(UserRequestDTO): UserResponseDTO
+        +getAllUsers(): List<UserResponseDTO>
+        +getUserById(UUID): UserResponseDTO
+        +updateUser(UUID, UserRequestDTO): UserResponseDTO
+        +patchUser(UUID, UserRequestDTO): UserResponseDTO
+        +deleteUser(UUID): void
+        +login(String): UserResponseDTO
+        -mapPhones(List<PhoneRequestDTO>): List<Phone>
+        -mapToUserResponseDTO(User): UserResponseDTO
+    }
+
+    class UserRepository {
+        +existsByEmail(String): boolean
+        +findByEmail(String): Optional<User>
+    }
+
+    class JwtTokenProvider {
+        -jwtSecret: String
+        -jwtExpirationInMs: long
+        +generateToken(String): String
+        +getEmailFromToken(String): String
+        +validateToken(String): boolean
+    }
+
+    class User {
+        -id: UUID
+        -name: String
+        -email: String
+        -password: String
+        -phones: List<Phone>
+        -created: LocalDateTime
+        -modified: LocalDateTime
+        -lastLogin: LocalDateTime
+        -token: String
+        -active: boolean
+        +onCreate(): void
+        +onUpdate(): void
+    }
+
+    class Phone {
+        -id: UUID
+        -number: String
+        -cityCode: String
+        -countryCode: String
+    }
+
+    class UserRequestDTO {
+        -nombre: String
+        -correo: String
+        -password: String
+        -telefonos: List<PhoneRequestDTO>
+    }
+
+    class PhoneRequestDTO {
+        -numero: String
+        -codigoCiudad: String
+        -codigoPais: String
+    }
+
+    class UserResponseDTO {
+        -id: UUID
+        -creado: LocalDateTime
+        -modificado: LocalDateTime
+        -ultimoLogin: LocalDateTime
+        -token: String
+        -activo: boolean
+    }
+
+    class GlobalExceptionHandler {
+        +handleEmailAlreadyExistsException(EmailAlreadyExistsException): ResponseEntity<ErrorResponseDTO>
+        +handleInvalidPasswordFormatException(InvalidPasswordFormatException): ResponseEntity<ErrorResponseDTO>
+        +handleResourceNotFoundException(ResourceNotFoundException): ResponseEntity<ErrorResponseDTO>
+        +handleValidationExceptions(MethodArgumentNotValidException): ResponseEntity<ErrorResponseDTO>
+        +handleGenericException(Exception): ResponseEntity<ErrorResponseDTO>
+    }
+
+    UserController --> UserService : usa
+    UserService --> UserRepository : usa
+    UserService --> JwtTokenProvider : usa
+    UserRepository --> User : gestiona
+    User "1" --> "many" Phone : tiene
+    UserController ..> UserRequestDTO : recibe
+    UserController ..> UserResponseDTO : retorna
+    UserService ..> UserRequestDTO : procesa
+    UserService ..> UserResponseDTO : genera
+    GlobalExceptionHandler ..> ErrorResponseDTO : genera
